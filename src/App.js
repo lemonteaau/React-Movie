@@ -61,8 +61,6 @@ export default function App() {
   const [error, setError] = useState("");
   const [selectedId, setSelectedId] = useState(null);
 
-  const tempQuery = "avengers end game";
-
   function handleMovieSelect(id) {
     setSelectedId((selectedId) => (id === selectedId ? null : id));
   }
@@ -121,7 +119,6 @@ export default function App() {
       </NavBar>
 
       <Main>
-        {/* {isLoading ? <Loader /> : <MovieList movies={movies} />}</Box> */}
         <Box>
           {isLoading && <Loader />}
           {!isLoading && !error && (
@@ -135,6 +132,7 @@ export default function App() {
               selectedId={selectedId}
               onCloseMovie={handleCloseMovieDetail}
               onAddWatched={handleAddWatched}
+              watched={watched}
             />
           ) : (
             <>
@@ -241,7 +239,7 @@ function Movie({ movie, onSelectMovie }) {
   );
 }
 
-function MovieDetail({ selectedId, onCloseMovie, onAddWatched }) {
+function MovieDetail({ selectedId, onCloseMovie, onAddWatched, watched }) {
   const [movie, setMovie] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -260,6 +258,14 @@ function MovieDetail({ selectedId, onCloseMovie, onAddWatched }) {
     Genre: genre,
   } = movie;
 
+  const isSelectedWatched = watched.some(
+    (watchedMovie) => watchedMovie.imdbID === selectedId
+  );
+  const watchedRating = watched.find(
+    (watchedMovie) => watchedMovie?.imdbID === selectedId
+  )?.userRating;
+  console.log(watchedRating);
+
   function handleAdd() {
     const newWatchedMovie = {
       imdbID: selectedId,
@@ -270,7 +276,6 @@ function MovieDetail({ selectedId, onCloseMovie, onAddWatched }) {
       imdbRating: Number(imdbRating),
       userRating,
     };
-
     onAddWatched(newWatchedMovie);
     onCloseMovie();
   }
@@ -332,19 +337,33 @@ function MovieDetail({ selectedId, onCloseMovie, onAddWatched }) {
             </div>
           </header>
           <section>
-            <div className="rating">
-              <StarRating
-                maxRating={10}
-                size={26}
-                onSetRating={setUserRating}
-              />
+            {/* //TODO: Determine whether a movie has been added into watched list , if so, the add btn shouldn't appear
+              TODO: also, user should not be allowed to rating movie in this situation */}
 
-              {userRating > 0 && (
-                <button className="btn-add" onClick={handleAdd}>
-                  + Add to watched list
-                </button>
-              )}
-            </div>
+            {isSelectedWatched ? (
+              <div className="rating">
+                <StarRating
+                  maxRating={10}
+                  size={26}
+                  isStaticRating={true}
+                  staticRating={watchedRating}
+                />
+              </div>
+            ) : (
+              <>
+                <div className="rating">
+                  <StarRating
+                    maxRating={10}
+                    size={26}
+                    onSetRating={setUserRating}
+                  />
+                  <button className="btn-add" onClick={handleAdd}>
+                    + Add to watched list
+                  </button>{" "}
+                </div>
+              </>
+            )}
+
             <p>
               <em>{plot}</em>
             </p>
