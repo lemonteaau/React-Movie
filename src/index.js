@@ -1,7 +1,7 @@
 import { StrictMode, useState } from "react";
 import { createRoot } from "react-dom/client";
-// import "./index.css";
-// import App from "./App";
+import "./index.css";
+import App from "./App";
 
 import StarRating from "./StarRating";
 
@@ -21,13 +21,6 @@ const root = createRoot(rootElement);
 
 root.render(
   <StrictMode>
-    {/* <App /> */}
-    <StarRating
-      maxRating={5}
-      messages={["Terrible", "Bad", "OK", "Good", "Amazing"]}
-    />
-    <StarRating size={24} color="grey" className="test" defaultRating={2} />
-
-    <Test />
+    <App />
   </StrictMode>
 );
