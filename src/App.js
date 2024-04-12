@@ -239,6 +239,7 @@ function Movie({ movie, onSelectMovie }) {
 function MovieDetail({ selectedId, onCloseMovie }) {
   const [movie, setMovie] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const {
     Title: title,
@@ -253,19 +254,35 @@ function MovieDetail({ selectedId, onCloseMovie }) {
     Genre: genre,
   } = movie;
 
-  console.log(title, year);
-
   useEffect(
     function () {
       async function getMovieDetails() {
-        setIsLoading(true);
-        const res = await fetch(
-          `https://www.omdbapi.com/?i=${selectedId}&apikey=${KEY}`
-        );
-        const data = await res.json();
-        setMovie(data);
-        setIsLoading(false);
+        try {
+          setIsLoading(true);
+          setError("");
+
+          const res = await fetch(
+            `https://www.omdbapi.com/?i=${selectedId}&apikey=${KEY}`
+          );
+
+          if (!res.ok) {
+            throw new Error("Something went wrong with fetching movie details");
+          }
+
+          const data = await res.json();
+
+          if (data.Response === "False") {
+            throw new Error("Movie details not found");
+          }
+
+          setMovie(data);
+        } catch (err) {
+          setError(err.message);
+        } finally {
+          setIsLoading(false);
+        }
       }
+
       getMovieDetails();
     },
     [selectedId]
@@ -273,9 +290,8 @@ function MovieDetail({ selectedId, onCloseMovie }) {
 
   return (
     <div className="details">
-      {isLoading ? (
-        <Loader />
-      ) : (
+      {isLoading && <Loader />}
+      {!isLoading && !error && (
         <>
           <header>
             <button className="btn-back" onClick={onCloseMovie}>
@@ -294,7 +310,6 @@ function MovieDetail({ selectedId, onCloseMovie }) {
               </p>
             </div>
           </header>
-
           <section>
             <div className="rating">
               <StarRating maxRating={10} size={26} />
@@ -311,6 +326,7 @@ function MovieDetail({ selectedId, onCloseMovie }) {
           </section>
         </>
       )}
+      {error && <ErrorMessage message={error} />}
     </div>
   );
 }
