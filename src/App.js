@@ -264,7 +264,6 @@ function MovieDetail({ selectedId, onCloseMovie, onAddWatched, watched }) {
       function callback(e) {
         if (e.code === "Escape") {
           onCloseMovie();
-          console.log("CLOSING");
         }
       }
       document.addEventListener("keydown", callback);
@@ -319,7 +318,7 @@ function MovieDetail({ selectedId, onCloseMovie, onAddWatched, watched }) {
 
       return function () {
         document.title = "React Movie";
-        console.log(`Clean up effect for movie ${title}`);
+        // console.log(`Clean up effect for movie ${title}`);
       };
     },
     [title]
