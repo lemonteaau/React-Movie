@@ -1,6 +1,6 @@
 # React Movie App
 
-A simple and intuitive movie searching and tracking application built with React. Users can search for movies, view movie details, rate movies, and keep track of the movies they have watched.
+An intuitive movie searching and tracking application built with React. Users can search for movies, view movie details, rate movies, and keep track of the movies they have watched.
 
 <img width="1389" alt="image" src="https://github.com/lemonteaau/React-Movie/assets/104964583/00c841e8-3e01-4366-80b7-dd5f6d008ba3">
 
