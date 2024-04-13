@@ -28,12 +28,17 @@ export default function App() {
 
   useEffect(
     function () {
+      let timeoutId;
+
       async function fetchMovies() {
         try {
           setIsLoading(true);
           setError("");
           const res = await fetch(
-            `https://www.omdbapi.com/?s=${query}&apikey=${KEY}`
+            `https://www.omdbapi.com/?s=${query.replace(
+              /\s+/g,
+              "+"
+            )}&apikey=${KEY}`
           );
 
           if (!res.ok) {
@@ -42,10 +47,12 @@ export default function App() {
 
           const data = await res.json();
           if (data.Response === "False") {
-            throw new Error("Movie not found");
+            // throw new Error("Movie not found");
+            setMovies([]);
+            setError("No results found");
+          } else {
+            setMovies(data.Search);
           }
-
-          setMovies(data.Search);
         } catch (err) {
           setError(err.message);
         } finally {
@@ -59,7 +66,10 @@ export default function App() {
         return;
       }
 
-      fetchMovies();
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(fetchMovies, 500);
+
+      return () => clearTimeout(timeoutId);
     },
     [query]
   );
