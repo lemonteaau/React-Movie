@@ -34,7 +34,7 @@ export default function App() {
 
   useEffect(
     function () {
-      let timeoutId;
+      const controller = new AbortController();
 
       async function fetchMovies() {
         try {
@@ -44,7 +44,8 @@ export default function App() {
             `https://www.omdbapi.com/?s=${query.replace(
               /\s+/g,
               "+"
-            )}&apikey=${KEY}`
+            )}&apikey=${KEY}`,
+            { signal: controller.signal }
           );
 
           if (!res.ok) {
@@ -53,14 +54,15 @@ export default function App() {
 
           const data = await res.json();
           if (data.Response === "False") {
-            // throw new Error("Movie not found");
-            setMovies([]);
-            setError("No results found");
+            throw new Error("Movie not found");
           } else {
             setMovies(data.Search);
+            // setError("");
           }
         } catch (err) {
-          setError(err.message);
+          if (err.name !== "AbortError") {
+            setError(err.message);
+          }
         } finally {
           setIsLoading(false);
         }
@@ -72,10 +74,16 @@ export default function App() {
         return;
       }
 
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(fetchMovies, 500);
+      fetchMovies();
 
-      return () => clearTimeout(timeoutId);
+      return function () {
+        controller.abort();
+      };
+
+      // clearTimeout(timeoutId);
+      // timeoutId = setTimeout(fetchMovies, 500);
+
+      // return () => clearTimeout(timeoutId);
     },
     [query]
   );
@@ -236,7 +244,6 @@ function MovieDetail({ selectedId, onCloseMovie, onAddWatched, watched }) {
   const watchedRating = watched.find(
     (watchedMovie) => watchedMovie?.imdbID === selectedId
   )?.userRating;
-  console.log(watchedRating);
 
   function handleAdd() {
     const newWatchedMovie = {
@@ -284,6 +291,21 @@ function MovieDetail({ selectedId, onCloseMovie, onAddWatched, watched }) {
       getMovieDetails();
     },
     [selectedId]
+  );
+
+  useEffect(
+    function () {
+      if (!title) {
+        return;
+      }
+      document.title = `Movie | ${title}`;
+
+      return function () {
+        document.title = "React Movie";
+        console.log(`Clean up effect for movie ${title}`);
+      };
+    },
+    [title]
   );
 
   return (
