@@ -81,6 +81,11 @@ export default function App() {
       return function () {
         controller.abort();
       };
+
+      // clearTimeout(timeoutId);
+      // timeoutId = setTimeout(fetchMovies, 500);
+
+      // return () => clearTimeout(timeoutId);
     },
     [query]
   );
@@ -222,13 +227,6 @@ function MovieDetail({ selectedId, onCloseMovie, onAddWatched, watched }) {
   const [error, setError] = useState("");
   const [userRating, setUserRating] = useState("");
 
-  const isSelectedWatched = watched.some(
-    (watchedMovie) => watchedMovie.imdbID === selectedId
-  );
-  const watchedRating = watched.find(
-    (watchedMovie) => watchedMovie?.imdbID === selectedId
-  )?.userRating;
-
   const {
     Title: title,
     Year: year,
@@ -242,26 +240,12 @@ function MovieDetail({ selectedId, onCloseMovie, onAddWatched, watched }) {
     Genre: genre,
   } = movie;
 
-  // if (imdbRating > 8) [isTop, setIsTop] = useState(true);
-
-  // if (imdbRating > 7) {
-  //   return <p>Greatest ever!</p>;
-  // }
-
-  // const [isTop, setIsTop] = useState(imdbRating > 8);
-  // console.log(isTop);
-
-  // useEffect(
-  //   function () {
-  //     setIsTop(imdbRating > 8);
-  //   },
-  //   [imdbRating]
-  // );
-
-  const isTop = imdbRating > 8;
-  console.log(isTop);
-
-  const [avgRating, setAvgRating] = useState(0);
+  const isSelectedWatched = watched.some(
+    (watchedMovie) => watchedMovie.imdbID === selectedId
+  );
+  const watchedRating = watched.find(
+    (watchedMovie) => watchedMovie?.imdbID === selectedId
+  )?.userRating;
 
   function handleAdd() {
     const newWatchedMovie = {
@@ -275,9 +259,6 @@ function MovieDetail({ selectedId, onCloseMovie, onAddWatched, watched }) {
     };
     onAddWatched(newWatchedMovie);
     onCloseMovie();
-
-    // setAvgRating(Number(imdbRating));
-    // setAvgRating((z) => (z + userRating) / 2);
   }
 
   useEffect(
@@ -339,6 +320,7 @@ function MovieDetail({ selectedId, onCloseMovie, onAddWatched, watched }) {
 
       return function () {
         document.title = "React Movie";
+        // console.log(`Clean up effect for movie ${title}`);
       };
     },
     [title]
@@ -366,7 +348,6 @@ function MovieDetail({ selectedId, onCloseMovie, onAddWatched, watched }) {
               </p>
             </div>
           </header>
-
           <section>
             {/* //TODO: Determine whether a movie has been added into watched list , if so, the add btn shouldn't appear
               TODO: also, user should not be allowed to rating movie in this situation */}
