@@ -172,9 +172,7 @@ function Search({ query, setQuery }) {
   useEffect(
     function () {
       function callback(e) {
-        if (document.activeElement === inputElement.current) {
-          return;
-        }
+        if (document.activeElement === inputElement.current) return;
 
         if (e.code === "Enter") {
           inputElement.current.focus();
@@ -260,6 +258,15 @@ function MovieDetail({ selectedId, onCloseMovie, onAddWatched, watched }) {
   const [error, setError] = useState("");
   const [userRating, setUserRating] = useState("");
 
+  const countRef = useRef(0);
+
+  useEffect(
+    function () {
+      if (userRating) countRef.current++;
+    },
+    [userRating]
+  );
+
   const isSelectedWatched = watched.some(
     (watchedMovie) => watchedMovie.imdbID === selectedId
   );
@@ -296,10 +303,10 @@ function MovieDetail({ selectedId, onCloseMovie, onAddWatched, watched }) {
   //   [imdbRating]
   // );
 
-  const isTop = imdbRating > 8;
-  console.log(isTop);
+  // const isTop = imdbRating > 8;
+  // console.log(isTop);
 
-  const [avgRating, setAvgRating] = useState(0);
+  // const [avgRating, setAvgRating] = useState(0);
 
   function handleAdd() {
     const newWatchedMovie = {
@@ -310,6 +317,7 @@ function MovieDetail({ selectedId, onCloseMovie, onAddWatched, watched }) {
       runtime: Number(runtime.split(" ").at(0)),
       imdbRating: Number(imdbRating),
       userRating,
+      countRatingDecisions: countRef.current,
     };
     onAddWatched(newWatchedMovie);
     onCloseMovie();
@@ -428,7 +436,7 @@ function MovieDetail({ selectedId, onCloseMovie, onAddWatched, watched }) {
                   />
                   <button className="btn-add" onClick={handleAdd}>
                     + Add to watched list
-                  </button>{" "}
+                  </button>
                 </div>
               </>
             )}
