@@ -1,4 +1,4 @@
-# React Movie App
+# React Movie
 
 An intuitive movie searching and tracking application built with React. Users can search for movies, view movie details, rate movies, and keep track of the movies they have watched.
 
